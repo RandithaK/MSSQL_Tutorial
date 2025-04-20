@@ -2,22 +2,33 @@
 USE OnlineStoreDB;
 GO
 
--- Procedure to get details for a specific product
+--! BASIC STORED PROCEDURE: Product Information Lookup
+--* Purpose: Retrieves information about a specific product by ID
+--* Demonstrates simple procedure execution with parameters
+
 CREATE PROCEDURE GetProductInfo
-    @prodId CHAR(4) -- Input parameter
+    @productId CHAR(4) -- Product ID to retrieve
 AS
 BEGIN
-    -- SET NOCOUNT ON added to prevent extra result sets from
-    -- interfering with SELECT statements.
     SET NOCOUNT ON;
 
-    SELECT *
+    SELECT 
+        productId,
+        productName,
+        unitPrice,
+        unitInStock,
+        ROL AS ReorderLevel
     FROM Products
-    WHERE productId = @prodId;
+    WHERE productId = @productId;
 END;
 GO
 
--- How to use it:
-EXEC GetProductInfo @prodId = 'P001';
--- Or positional:
-EXEC GetProductInfo 'P002';
+--! USAGE EXAMPLES
+
+--* Example 1: Get information for product P001
+EXEC GetProductInfo @productId = 'P001';
+
+--* Example 2: Alternative syntax
+-- EXECUTE GetProductInfo 'P002';
+
+--TODO: Add error handling for non-existent product IDs

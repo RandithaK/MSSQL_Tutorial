@@ -2,19 +2,28 @@
 USE OnlineStoreDB;
 GO
 
--- Left Join Example
--- This SQL query retrieves all employees and their associated departments, including employees without departments.
--- It uses a LEFT JOIN to ensure that all employees are included in the result set, even if they have no associated department.
--- The result set will contain NULL values for the department columns if an employee has no matching department.
--- This is useful for scenarios where you want to see all employees and their associated departments, regardless of whether they are related.
+--! LEFT JOIN: Employees with Departments
+--* Purpose: This query retrieves all employees and their associated departments
+--* Demonstrates how LEFT JOIN preserves all records from the "left" table (Employees)
+--* even when there's no corresponding match in the "right" table (Departments)
+
+--? LEFT JOIN ensures employees with no department assignment still appear
+--? This is critical for HR reporting where you need a complete employee list
 
 SELECT
-    E.eid,
-    E.ename,
-    D.dname -- Department Name (could be NULL if no match)
+    E.eid AS EmployeeID,
+    E.ename AS EmployeeName,
+    D.dname AS DepartmentName  --! NULL indicates employee without department assignment
 FROM
-    Employees AS E -- Left Table (All Employees)
+    Employees AS E  --* Left Table (ALL employees will be included)
 LEFT JOIN
-    Department AS D -- Right Table
+    Department AS D --* Right Table (matching only if exists)
 ON
-    E.did = D.did; -- Join on Department ID
+    E.did = D.did;  --* Join condition based on department ID
+
+--! BUSINESS USE CASES:
+--* 1. HR reports requiring complete employee lists
+--* 2. Finding employees not assigned to any department
+--* 3. Auditing department assignments
+
+--TODO: Extend query to include additional employment details

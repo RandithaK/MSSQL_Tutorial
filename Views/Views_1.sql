@@ -2,16 +2,27 @@
 USE OnlineStoreDB;
 GO
 
--- View for Sri Lankan Customers
+--! SIMPLE VIEW: Sri Lankan Customers
+--* Purpose: Creates a filtered view of customers from Sri Lanka
+--* Demonstrates basic view creation for data abstraction
+
 CREATE VIEW SriLankanCustomers AS
 SELECT cid, name, phone
 FROM Customers
 WHERE country = 'Sri Lanka';
 GO
 
--- How to use it:
+--! USAGE EXAMPLES
+
+--* Basic usage - retrieve all Sri Lankan customers
 SELECT * FROM SriLankanCustomers;
 
--- Try inserting (will likely work as it's based on one table and includes necessary columns if no defaults)
--- INSERT INTO SriLankanCustomers (cid, name, phone) VALUES ('C004', 'Nimal', '0711234567');
--- SELECT * FROM Customers; -- Verify if C004 was added
+--* Join with other tables using the view
+-- SELECT 
+--     SLC.name AS CustomerName,
+--     O.oid AS OrderID,
+--     O.orderDate AS OrderDate
+-- FROM SriLankanCustomers SLC
+-- JOIN Orders O ON SLC.cid = O.cid;
+
+--TODO: Consider adding more customer details to the view

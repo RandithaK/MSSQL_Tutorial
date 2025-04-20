@@ -2,19 +2,46 @@
 USE OnlineStoreDB;
 GO
 
--- This SQL query retrieves all products from the Products table and their corresponding order details from the orderDetails table.
--- It uses a RIGHT JOIN to ensure that all products are included in the result set, even if they have never been ordered.
--- The result set will contain NULL values for the order details columns if a product has never been ordered.
+--! RIGHT JOIN WITH NULL FILTER: Finding Products Never Ordered
+--* This demonstrates an important pattern for identifying "orphaned" or unused records
+--* using RIGHT JOIN + NULL check (a common inventory management requirement)
+
+--? WHY RIGHT JOIN? We're ensuring ALL products appear, even those with no orders
+--? The NULL filter then finds only products that have never appeared in any order
+
 SELECT
     P.productId,
     P.productName,
-    OD.oid,         -- Order ID (NULL if never ordered)
-    OD.quantity     -- Quantity (NULL if never ordered)
+    P.unitPrice,       -- Product price 
+    P.unitInStock,     -- Current stock level
+    OD.oid,            --! Will be NULL for never-ordered products
+    OD.quantity        --! Will be NULL for never-ordered products
 FROM
     orderDetails AS OD -- Left Table
 RIGHT JOIN
-    Products AS P      -- Right Table (We want ALL Products)
+    Products AS P      -- Right Table (ALL products included)
 ON
     OD.productId = P.productId
 WHERE
-    OD.oid IS NULL;   -- Filter for products with no matching order details
+    OD.oid IS NULL;    --* Critical filter: only show products with no matching orders
+
+--! BUSINESS USE CASES:
+--* 1. Identify slow-moving inventory that may need promotion
+--* 2. Find products that could be discontinued
+--* 3. Verify product catalog accuracy against actual sales
+
+--? Alternative approach using NOT EXISTS (often more efficient):
+/* 
+SELECT 
+    P.productId,
+    P.productName,
+    P.unitPrice,
+    P.unitInStock
+FROM Products P
+WHERE NOT EXISTS (
+    SELECT 1 FROM orderDetails OD 
+    WHERE OD.productId = P.productId
+);
+*/
+
+--TODO: Extend query to include how long products have been in inventory without orders

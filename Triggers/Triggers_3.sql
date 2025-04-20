@@ -3,8 +3,8 @@ USE OnlineStoreDB;
 GO
 
 -- Trigger to check employee salary against supervisor's salary
-CREATE TRIGGER TR_Employee_CheckSalary
-ON Employees -- Trigger on Employee table (using the schema from Trigger Part 2)
+CREATE TRIGGER TR_Employees_CheckSalary
+ON Employees -- Trigger on Employees table (using the schema from Trigger Part 2)
 AFTER INSERT, UPDATE -- Fires after INSERT or UPDATE
 AS
 BEGIN
@@ -53,5 +53,5 @@ SELECT salary FROM Employees WHERE eid = 'e002';
 -- Try inserting a new employee with salary > supervisor's (should fail)
 PRINT 'Inserting new employee (invalid salary)...';
 -- Assuming e001's salary is 70000
--- INSERT INTO Employee (eid, ename, age, salary, did, supervld)
--- VALUES ('e008', 'Test', 25, 90000.00, 'd001', 'e001'); -- This should raise an error
+-- INSERT INTO Employees (eid, ename, birthdate, salary, did, supervld)
+-- VALUES ('E008', 'Test', '2000-01-01', 90000.00, 'd001', 'E001'); -- This should raise an error

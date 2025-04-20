@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS Products;
 DROP TABLE IF EXISTS Employees;
 DROP TABLE IF EXISTS Customers;
 DROP TABLE IF EXISTS Items_to_Order; -- For Trigger practical
-DROP TABLE IF EXISTS Employee; -- For Trigger practical Part 2
+DROP TABLE IF EXISTS Employees; -- For Trigger practical Part 2
 DROP TABLE IF EXISTS Department; -- For Trigger practical Part 2
 GO
 
@@ -106,7 +106,7 @@ CREATE TABLE Items_to_Order (
     FOREIGN KEY (ProductId) REFERENCES Products(productId)
 );
 
--- Add the Manager Foreign Key constraint to Department after Employee table is created
+-- Add the Manager Foreign Key constraint to Department after Employees table is created
 ALTER TABLE Department ADD CONSTRAINT department_fk FOREIGN KEY (mgrid) REFERENCES Employees(eid);
 GO
 
@@ -416,7 +416,7 @@ CROSS JOIN
 
 **Example: Find Each Employee and Their Supervisor's Name**
 
-Using the `Employee` table from the Triggers practical, which has `eid` and `supervld` (supervisor's eid).
+Using the `Employees` table from the Triggers practical, which has `eid` and `supervld` (supervisor's eid).
 
 ```sql
 SELECT
@@ -427,15 +427,15 @@ SELECT
     Sup.ename AS SupervisorName,
     Sup.salary AS SupervisorSalary
 FROM
-    Employee AS Emp  -- Instance 1: Represents the Employee
+    Employees AS Emp  -- Instance 1: Represents the Employee
 LEFT JOIN -- Use LEFT JOIN to include employees with NO supervisor (e.g., the CEO)
-    Employee AS Sup  -- Instance 2: Represents the Supervisor
+    Employees AS Sup  -- Instance 2: Represents the Supervisor
 ON
     Emp.supervld = Sup.eid; -- Join condition: Employee's supervisor ID matches Supervisor's employee ID
 ```
 
 *   **Explanation:**
-    *   We reference the `Employee` table twice, giving it different aliases: `Emp` for the employee role and `Sup` for the supervisor role.
+    *   We reference the `Employees` table twice, giving it different aliases: `Emp` for the employee role and `Sup` for the supervisor role.
     *   The `ON Emp.supervld = Sup.eid` condition links an employee row (`Emp`) to their supervisor's row (`Sup`).
     *   We use `LEFT JOIN` so that employees who have `supervld` as `NULL` (like 'Saman', 'e001' in our data) are still included in the results; their supervisor columns (`SupervisorID`, `SupervisorName`, `SupervisorSalary`) will just be `NULL`. If we used `INNER JOIN`, employees without supervisors would be excluded.
 
@@ -568,7 +568,7 @@ UPDATE UsaCustomersView SET phone = '1112223333' WHERE cid = 'C002';
 *   **Goal:** Retrieve department details along with the manager's details.
 
 ```sql
--- View joining Department and Employee (for manager details)
+-- View joining Department and Employees (for manager details)
 CREATE VIEW DeptMgr_Details AS
 SELECT
     D.did,
@@ -576,11 +576,11 @@ SELECT
     D.budget,
     D.mgrid,
     E.ename AS mgrname,
-    E.age AS MgrAge,
+    DATEDIFF(YEAR, E.birthdate, GETDATE()) AS MgrAge,  -- Calculate age from birthdate
     E.salary AS MgrSalary,
     E.supervld AS MgrSupervisorId -- Manager's supervisor
 FROM Department D
-LEFT JOIN Employee E ON D.mgrid = E.eid; -- Use LEFT JOIN if a dept might not have a manager assigned yet
+LEFT JOIN Employees E ON D.mgrid = E.eid; -- Use LEFT JOIN if a dept might not have a manager assigned yet
 GO
 
 -- How to use it:
@@ -1181,7 +1181,7 @@ SELECT * FROM orderDetails WHERE oid = 2;
 ```sql
 -- Trigger to check employee salary against supervisor's salary
 CREATE TRIGGER TR_Employee_CheckSalary
-ON Employee -- Trigger on Employee table (using the schema from Trigger Part 2)
+ON Employees -- Trigger on Employee table (using the schema from Trigger Part 2)
 AFTER INSERT, UPDATE -- Fires after INSERT or UPDATE
 AS
 BEGIN
@@ -1194,7 +1194,7 @@ BEGIN
         IF EXISTS (
             SELECT 1
             FROM inserted i -- New/updated employee data
-            JOIN Employee supervisor ON i.supervld = supervisor.eid -- Find the supervisor
+            JOIN Employees supervisor ON i.supervld = supervisor.eid -- Find the supervisor
             WHERE i.salary > supervisor.salary -- The condition to check
               AND i.supervld IS NOT NULL -- Only check if there IS a supervisor
         )
@@ -1210,34 +1210,34 @@ GO
 
 -- How to test it:
 PRINT 'Supervisor (e001) Salary:';
-SELECT salary FROM Employee WHERE eid = 'e001'; -- Saman's salary (70000)
+SELECT salary FROM Employees WHERE eid = 'e001'; -- Saman's salary (70000)
 
 PRINT 'Employee (e002) Salary:';
-SELECT salary FROM Employee WHERE eid = 'e002'; -- Kamal's salary (34000), supervisor is e001
+SELECT salary FROM Employees WHERE eid = 'e002'; -- Kamal's salary (34000), supervisor is e001
 
 -- Try updating Kamal's salary to be less than Saman's (should work)
 PRINT 'Updating Kamal salary (valid)...';
-UPDATE Employee SET salary = 60000.00 WHERE eid = 'e002';
-SELECT salary FROM Employee WHERE eid = 'e002'; -- Should show 60000
+UPDATE Employees SET salary = 60000.00 WHERE eid = 'e002';
+SELECT salary FROM Employees WHERE eid = 'e002'; -- Should show 60000
 
 -- Try updating Kamal's salary to be more than Saman's (should fail and rollback)
 PRINT 'Updating Kamal salary (invalid)...';
-UPDATE Employee SET salary = 80000.00 WHERE eid = 'e002'; -- This should raise an error
+UPDATE Employees SET salary = 80000.00 WHERE eid = 'e002'; -- This should raise an error
 
 -- Verify Kamal's salary after the failed attempt (should be rolled back to 60000)
-SELECT salary FROM Employee WHERE eid = 'e002';
+SELECT salary FROM Employees WHERE eid = 'e002';
 
 -- Try inserting a new employee with salary > supervisor's (should fail)
 PRINT 'Inserting new employee (invalid salary)...';
 -- Assuming e001's salary is 70000
--- INSERT INTO Employee (eid, ename, age, salary, did, supervld)
+-- INSERT INTO Employees (eid, ename, age, salary, did, supervld)
 -- VALUES ('e008', 'Test', 25, 90000.00, 'd001', 'e001'); -- This should raise an error
 ```
 
 *   **Explanation:**
-    *   `ON Employee AFTER INSERT, UPDATE`: Fires for both operations.
+    *   `ON Employees AFTER INSERT, UPDATE`: Fires for both operations.
     *   `IF UPDATE(salary)`: Focuses the check only when the salary might have changed.
-    *   `FROM inserted i JOIN Employee supervisor ON i.supervld = supervisor.eid`: Joins the `inserted` table (containing the employee(s) being changed) with the `Employee` table itself (aliased as `supervisor`) to get the supervisor's details based on `i.supervld`.
+    *   `FROM inserted i JOIN Employees supervisor ON i.supervld = supervisor.eid`: Joins the `inserted` table (containing the employee(s) being changed) with the `Employees` table itself (aliased as `supervisor`) to get the supervisor's details based on `i.supervld`.
     *   `WHERE i.salary > supervisor.salary AND i.supervld IS NOT NULL`: Checks the salary condition, making sure to only compare when a supervisor exists.
     *   `RAISERROR...ROLLBACK`: If an invalid salary is detected, an error is shown, and the entire transaction (the `INSERT` or `UPDATE` that fired the trigger) is cancelled.
 
@@ -1264,7 +1264,7 @@ BEGIN
         RETURN;
     END;
 
-    IF EXISTS (SELECT 1 FROM inserted i LEFT JOIN Employee E ON i.mgrid = E.eid WHERE i.mgrid IS NOT NULL AND E.eid IS NULL)
+    IF EXISTS (SELECT 1 FROM inserted i LEFT JOIN Employees E ON i.mgrid = E.eid WHERE i.mgrid IS NOT NULL AND E.eid IS NULL)
     BEGIN
         RAISERROR('Specified Manager ID (mgrid) does not exist in the Employee table.', 16, 1);
         RETURN;

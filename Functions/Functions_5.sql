@@ -2,7 +2,10 @@
 USE OnlineStoreDB;
 GO
 
--- Modify orderInfo to apply discount only if quantity > 2
+--! TABLE-VALUED FUNCTION WITH BUSINESS LOGIC: Conditional Discount Application
+--* Purpose: Returns order details with conditional discounts applied
+--* Business Rule: Discounts only apply when quantity exceeds 2 items
+
 ALTER FUNCTION orderInfo (@orderId INT)
 RETURNS TABLE
 AS
@@ -13,12 +16,16 @@ RETURN
         OD.quantity AS qty,
         P.unitPrice AS unitAmt,
         (P.unitPrice * OD.quantity) AS totAmt,
-        -- Apply discount amount conditionally using CASE
+        
+        --! CONDITIONAL DISCOUNT LOGIC
+        --* Only apply discount when quantity > 2 (business rule)
         CASE
             WHEN OD.quantity > 2 THEN (P.unitPrice * OD.quantity * OD.discount)
             ELSE 0 -- No discount if quantity is 2 or less
         END AS discountAmt,
-        -- Calculate payable amount based on the potentially zero discountAmt
+        
+        --* Calculate final payable amount with discount (if applicable)
+        --? Note how we reuse the same CASE expression to ensure consistency
         (P.unitPrice * OD.quantity) -
             (CASE
                 WHEN OD.quantity > 2 THEN (P.unitPrice * OD.quantity * OD.discount)
@@ -31,6 +38,17 @@ RETURN
 );
 GO
 
--- How to use it:
--- Get detailed info for Order ID 1 with conditional discount
+--! USAGE EXAMPLES
+
+--* Example 1: View detailed order information with conditional discounts
 SELECT * FROM dbo.orderInfo(1);
+
+--* Example 2: Summarize total payable amount for the order
+-- SELECT 
+--     @orderId AS OrderID,
+--     SUM(totAmt) AS TotalBeforeDiscount,
+--     SUM(discountAmt) AS TotalDiscount,
+--     SUM(payAmt) AS FinalAmount
+-- FROM dbo.orderInfo(1);
+
+--TODO: Refactor to avoid repeating the CASE expression twice

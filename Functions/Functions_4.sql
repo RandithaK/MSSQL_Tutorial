@@ -2,7 +2,11 @@
 USE OnlineStoreDB;
 GO
 
--- Function to get detailed info for each order item
+--! TABLE-VALUED FUNCTION: Detailed Order Information
+--* Purpose: Returns comprehensive product and pricing details for an order
+--* Input: Order ID
+--* Output: Table with detailed line item information and calculations
+
 CREATE FUNCTION orderInfo (@orderId INT)
 RETURNS TABLE
 AS
@@ -13,17 +17,24 @@ RETURN
         OD.quantity AS qty,
         P.unitPrice AS unitAmt,
         (P.unitPrice * OD.quantity) AS totAmt,
-        -- Calculate discount amount: total amount * discount rate
         (P.unitPrice * OD.quantity * OD.discount) AS discountAmt,
-        -- Calculate payable amount: total amount - discount amount
-        (P.unitPrice * OD.quantity) - (P.unitPrice * OD.quantity * OD.discount) AS payAmt
-        -- Alternative payAmt: (P.unitPrice * OD.quantity * (1 - OD.discount))
+        (P.unitPrice * OD.quantity * (1 - OD.discount)) AS payAmt
     FROM orderDetails OD
     JOIN Products P ON OD.productId = P.productId
     WHERE OD.oid = @orderId
 );
 GO
 
--- How to use it:
--- Get detailed info for Order ID 1
+--! USAGE EXAMPLES
+
+--* Example 1: Retrieve detailed information for Order #1
 SELECT * FROM dbo.orderInfo(1);
+
+--* Example 2: Calculate order summary metrics
+-- SELECT 
+--     SUM(totAmt) AS TotalBeforeDiscount,
+--     SUM(discountAmt) AS TotalDiscount,
+--     SUM(payAmt) AS FinalAmount
+-- FROM dbo.orderInfo(1);
+
+--TODO: Add product category and inventory information

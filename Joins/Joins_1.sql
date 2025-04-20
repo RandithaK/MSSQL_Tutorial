@@ -2,10 +2,13 @@
 USE OnlineStoreDB;
 GO
 
--- This SQL query retrieves order details along with customer information by performing an inner join between the Orders and Customers tables.
--- It selects the order ID, order date, customer name, and customer country.
--- The join condition is based on the customer ID, ensuring that only orders with matching customers are included in the result set.
--- This is useful for scenarios where you want to see the details of orders along with the associated customer information.
+--! INNER JOIN: Orders with Customer Information
+--* Purpose: Combines order data with corresponding customer details
+--* This fundamental join type only shows records where the join condition is satisfied
+
+--? INNER JOIN is the most common join type, showing only matching records
+--? It answers the question: "Which orders were placed by which customers?"
+
 SELECT
     O.oid,          -- Order ID from Orders table
     O.orderDate,    -- Order Date from Orders table
@@ -17,3 +20,10 @@ INNER JOIN
     Customers AS C  -- Alias 'C' for the Customers table (right table)
 ON
     O.cid = C.cid;  -- The join condition: match customer IDs
+
+--! BUSINESS USE CASES:
+--* 1. Order reports showing customer information
+--* 2. Sales analysis by customer country
+--* 3. Customer purchase history tracking
+
+--TODO: Extend with order total calculation

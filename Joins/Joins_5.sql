@@ -2,19 +2,29 @@
 USE OnlineStoreDB;
 GO
 
--- Right Join Example
--- This SQL query retrieves all orders and their associated employees, including orders without employees.
--- It uses a RIGHT JOIN to ensure that all orders are included in the result set, even if they have no associated employee.
--- The result set will contain NULL values for the employee columns if an order has no matching employee.
--- This is useful for scenarios where you want to see all orders and their associated employees, regardless of whether they are related.
+--! RIGHT JOIN: All Orders with Customers
+--* Purpose: Shows all orders including those without matching customer records
+--* Demonstrates RIGHT JOIN preserving all records from "right" table (Orders)
+
+--? RIGHT JOIN is like LEFT JOIN with tables reversed
+--? It ensures all orders appear, regardless of customer match
+
 SELECT
-    O.oid,
-    O.orderDate,
-    E.eid,       -- Employee ID (will be NULL if no matching employee)
-    E.ename      -- Employee Name (will be NULL if no matching employee)
+    O.oid,               -- Order ID
+    O.orderDate,         -- Order Date
+    C.cid,               --! NULL indicates order with no customer record
+    C.name,              --! NULL indicates order with no customer record
+    C.country            --! NULL indicates order with no customer record
 FROM
-    Employees AS E -- Left Table
+    Customers AS C       --* Left Table
 RIGHT JOIN
-    Orders AS O    -- Right Table (We want ALL orders)
+    Orders AS O          --* Right Table (ALL orders will be included)
 ON
-    E.eid = O.eid; -- Join condition
+    C.cid = O.cid;       --* Join condition based on customer ID
+
+--! BUSINESS USE CASES:
+--* 1. Audit for orphaned order records
+--* 2. Data quality checking
+--* 3. Complete order reporting regardless of customer data integrity
+
+--TODO: Add additional order details and status information

@@ -2,19 +2,28 @@
 USE OnlineStoreDB;
 GO
 
--- View for Detailed Order Info (Mimicking the function)
-CREATE VIEW DetailedOrderInfo AS
-SELECT
-    O.oid,
-    O.orderDate,
+--! COMPLEX VIEW: Detailed Order Information
+--* Purpose: Creates a comprehensive view joining multiple tables
+--* Provides a single access point for order reporting
+
+CREATE VIEW OrderDetailView AS
+SELECT 
+    O.oid AS OrderID,
+    O.orderDate AS OrderDate,
+    O.shippedDate AS ShippedDate,
+    C.cid AS CustomerID,
     C.name AS CustomerName,
+    C.country AS CustomerCountry,
+    E.eid AS EmployeeID,
     E.ename AS EmployeeName,
-    P.productName,
-    OD.quantity,
-    P.unitPrice,
-    (P.unitPrice * OD.quantity) AS TotalProductPrice,
-    OD.discount,
-    (P.unitPrice * OD.quantity * (1 - OD.discount)) AS PayableProductPrice
+    P.productId AS ProductID,
+    P.productName AS ProductName,
+    OD.quantity AS Quantity,
+    P.unitPrice AS UnitPrice,
+    OD.discount AS DiscountRate,
+    (P.unitPrice * OD.quantity) AS GrossAmount,
+    (P.unitPrice * OD.quantity * OD.discount) AS DiscountAmount,
+    (P.unitPrice * OD.quantity * (1 - OD.discount)) AS NetAmount
 FROM Orders O
 JOIN Customers C ON O.cid = C.cid
 JOIN Employees E ON O.eid = E.eid
@@ -22,9 +31,19 @@ JOIN orderDetails OD ON O.oid = OD.oid
 JOIN Products P ON OD.productId = P.productId;
 GO
 
--- How to use it:
-SELECT * FROM DetailedOrderInfo WHERE oid = 1;
+--! USAGE EXAMPLES
 
--- Try updating (will likely FAIL because it involves multiple base tables)
--- UPDATE DetailedOrderInfo SET quantity = 4 WHERE oid = 1 AND productName = 'Hard Disk';
--- (This will typically result in an error)
+--* Basic usage - retrieve all order details
+SELECT * FROM OrderDetailView;
+
+--* Filtering and aggregation using the view
+-- SELECT 
+--     CustomerName,
+--     CustomerCountry,
+--     COUNT(DISTINCT OrderID) AS TotalOrders,
+--     SUM(NetAmount) AS TotalSpend
+-- FROM OrderDetailView
+-- GROUP BY CustomerName, CustomerCountry
+-- ORDER BY TotalSpend DESC;
+
+--TODO: Add order status and delivery time calculations

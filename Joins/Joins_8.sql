@@ -2,18 +2,27 @@
 USE OnlineStoreDB;
 GO
 
--- This SQL script demonstrates the use of a CROSS JOIN to create a Cartesian product between two tables: Customers and Products.
--- It selects the customer names and the products offered, resulting in a combination of every customer with every product.
--- This is useful for scenarios where you want to see all possible combinations of customers and products.
--- The script uses the CROSS JOIN syntax, which is a straightforward way to achieve this Cartesian product.
-SELECT
-    C.name AS CustomerName,
-    P.productName AS ProductOffered
-FROM
-    Customers AS C
-CROSS JOIN
-    Products AS P;
+--! CROSS JOIN: All Possible Customer-Product Combinations
+--* Purpose: Creates a cartesian product between customers and products
+--* This join produces every possible combination of records from both tables
 
--- Older (less recommended) syntax that produces the same result:
--- SELECT C.name, P.productName FROM Customers C, Products P;
--- (If you forget a WHERE clause here, you get a CROSS JOIN)
+--? CROSS JOIN does not require a join condition
+--? It's useful for generating combinations for pricing scenarios or product offerings
+
+SELECT
+    C.cid,               -- Customer ID
+    C.name,              -- Customer Name
+    P.productId,         -- Product ID
+    P.productName,       -- Product Name
+    P.unitPrice          -- Unit Price
+FROM
+    Customers AS C       -- First Table
+CROSS JOIN
+    Products AS P;       -- Second Table (No ON clause needed)
+
+--! BUSINESS USE CASES:
+--* 1. Creating product catalogs customized for each customer
+--* 2. Generating potential sales scenarios for forecasting
+--* 3. Building decision matrices for product recommendations
+
+--TODO: Add filtering to exclude certain products or customers

@@ -2,6 +2,7 @@
 
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)](https://www.microsoft.com/en-us/sql-server)
 [![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=sql&logoColor=white)](https://en.wikipedia.org/wiki/SQL)
+[![Last Updated](https://img.shields.io/badge/Last%20Updated-April%202025-brightgreen?style=for-the-badge)](https://github.com/yourusername/dbms-sql-examples)
 
 A comprehensive collection of SQL scripts and examples to help you master Database Management Systems using Microsoft SQL Server (MSSQL).
 
@@ -67,6 +68,7 @@ This collection includes SQL scripts demonstrating:
 
 - Microsoft SQL Server (any recent version)
 - SQL Server Management Studio or VSCode with SQL Server extension
+- [Better Comments Extension](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments) (recommended for enhanced code readability)
 
 ### Setup Instructions
 
@@ -105,6 +107,24 @@ Suggested learning order:
 4. SQL Functions (start with Functions_1.sql) - Creating reusable code modules
 5. SQL Stored Procedures (start with StoredProcedures_1.sql) - Encapsulating logic
 6. SQL Triggers (start with Triggers_1.sql) - Adding automated behaviors
+
+## 📝 Comment Legend
+
+This repository uses the [Better Comments](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments) extension formatting for improved readability:
+
+| Comment Style | Purpose |
+|---------------|---------|
+| `--! TITLE` | Section headers and important notes |
+| `--* Detail` | Key information and implementation details |
+| `--? Question` | Clarifications, edge cases, or considerations |
+| `--TODO: Task` | Potential improvements or extensions |
+
+## 📚 Additional Resources
+
+- [Microsoft SQL Documentation](https://docs.microsoft.com/en-us/sql/)
+- [W3Schools SQL Tutorial](https://www.w3schools.com/sql/)
+- [SQL Fiddle - Test SQL Online](http://sqlfiddle.com/)
+- [MSSQL Server GitHub Repository](https://github.com/microsoft/mssql-server)
 
 ---
 

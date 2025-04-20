@@ -2,21 +2,31 @@
 USE OnlineStoreDB;
 GO
 
--- This SQL query retrieves details of a specific order by joining the orderDetails table with the Products table.
--- It uses an INNER JOIN to ensure that only records with matching product IDs in both tables are included.
--- The result set will contain details of the order, including the product name, quantity, unit price, and discount.
--- This is useful for scenarios where you want to see the details of a specific order and the products associated with it.
+--! INNER JOIN: Order Details with Product Information
+--* Purpose: Combines order line items with their corresponding product details
+--* This join enriches order details with product names and pricing information
+
+--? This query is essential for generating detailed order reports and invoices
+--? It answers the question: "What products were included in each order?"
+
 SELECT
-    OD.oid,         -- Order ID from orderDetails
-    P.productName,  -- Product Name from Products
-    OD.quantity,    -- Quantity from orderDetails
-    P.unitPrice,    -- Unit Price from Products
-    OD.discount     -- Discount from orderDetails
+    OD.oid,              -- Order ID
+    P.productName,       -- Product Name
+    OD.quantity,         -- Quantity Ordered
+    P.unitPrice,         -- Unit Price
+    OD.discount,         -- Discount Rate
+    (P.unitPrice * OD.quantity) AS totalAmount, -- Raw Total
+    (P.unitPrice * OD.quantity * (1 - OD.discount)) AS discountedAmount -- After Discount
 FROM
-    orderDetails AS OD
+    orderDetails AS OD   -- Alias 'OD' for the Order Details table
 INNER JOIN
-    Products AS P
+    Products AS P        -- Alias 'P' for the Products table
 ON
-    OD.productId = P.productId -- Join based on the product ID
-WHERE
-    OD.oid = 1;     -- Filter for a specific order
+    OD.productId = P.productId; -- Join condition: match product IDs
+
+--! BUSINESS USE CASES:
+--* 1. Invoice generation with product details
+--* 2. Sales analysis by product
+--* 3. Discount effectiveness reporting
+
+--TODO: Add grouping by order ID with order subtotals
