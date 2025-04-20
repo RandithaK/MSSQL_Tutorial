@@ -2,7 +2,7 @@
 
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)](https://www.microsoft.com/en-us/sql-server)
 [![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=sql&logoColor=white)](https://en.wikipedia.org/wiki/SQL)
-[![Last Updated](https://img.shields.io/badge/Last%20Updated-April%202025-brightgreen?style=for-the-badge)](https://github.com/yourusername/dbms-sql-examples)
+[![Last Updated](https://img.shields.io/badge/Last%20Updated-April%202025-brightgreen?style=for-the-badge)](https://github.com/RandithaK/MSSQL_Tutorial)
 
 A comprehensive collection of SQL scripts and examples to help you master Database Management Systems using Microsoft SQL Server (MSSQL).
 
@@ -125,6 +125,13 @@ This repository uses the [Better Comments](https://marketplace.visualstudio.com/
 - [W3Schools SQL Tutorial](https://www.w3schools.com/sql/)
 - [SQL Fiddle - Test SQL Online](http://sqlfiddle.com/)
 - [MSSQL Server GitHub Repository](https://github.com/microsoft/mssql-server)
+
+## 📖 Additional Markdown Files
+
+This repository also includes the following markdown files for further learning and comparison:
+
+- **[MSSQL Tutorial.md](./MSSQL%20Tutorial.md)**: A comprehensive tutorial document explaining all concepts in detail.
+- **[SPvsF.md](./SPvsF.md)**: A comparison between Stored Procedures and Functions, highlighting their use cases and differences.
 
 ---
 
